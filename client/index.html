@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Romantic Web</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    Hi!
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://192.168.1.100:8888/');
+        socket.on('connect', function(){
+            socket.on('message', function (message) {
+                document.write(message.message + ' ' + message.name + ' ' +message.clients + '<br/>');
+            });
+        });
+    </script>
+</body>
+</html>
