@@ -6,13 +6,18 @@
     <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
-    Hi!
+    <div id="message"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io.connect('http://192.168.1.100:8888/');
+
+        socket.on('updatedMessage', function (data) {
+            document.querySelector('#message').innerHTML = (data.message);
+        });
+
         socket.on('connect', function(){
             socket.on('message', function (message) {
-                document.write(message.message + ' ' + message.name + ' ' +message.clients + '<br/>');
+                document.querySelector('#message').innerHTML = (message.message);
             });
         });
     </script>

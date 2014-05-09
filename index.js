@@ -1,7 +1,10 @@
 var app = require('http').createServer(handler).listen(8888),
     io = require('socket.io').listen(app),
     fs = require('fs'),
-    clientQueue = new Array();
+    CQueue = require('./cqueue'),
+    cQueue = new CQueue();
+
+cQueue.registerMethods();
 
 function handler (req, res) {
     fs.readFile(__dirname + '/client/index.html',
@@ -17,21 +20,12 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-    var clientID = (socket.id).toString();
-    clientQueue.push(clientID);
-    var clientQueueString = '[' + clientQueue.join(';') + ']';
+    cQueue.addClientToQueue(socket);
 
-    socket.json.send({'name': clientID, message: 'Welcome', clients: clientQueueString});
-    socket.broadcast.json.send({'name': clientID, message: 'Is here', clients: clientQueueString});
-
-    socket.on('message', function(message){
-        socket.broadcast.json.send({'name': clientID, message: 'Is here', clients: clientQueueString});
-    });
+    cQueue.broadcastMessages('updatedMessage');
 
     socket.on('disconnect', function() {
-        var index = clientQueue.indexOf(clientID);
-        clientQueue.splice(index, 1);
-        var clientQueueString = '[' + clientQueue.join(';') + ']';
-        io.sockets.json.send({'name': clientID, message: 'Left', clients: clientQueueString});
+        cQueue.removeClientFromQueue(socket);
+        cQueue.broadcastMessages('updatedMessage');
     });
 });
