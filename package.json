@@ -2,7 +2,7 @@
     "name" : "RomanticWeb",
     "version" : "0.0.1",
     "dependencies" : {
-        "socket.io" : "~0.9.16",
-        "" : ""
+        "socket.io" : "0.9.16",
+        "flake-idgen" : "0.1.1"
     }
 }

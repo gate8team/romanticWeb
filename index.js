@@ -1,10 +1,12 @@
 var app = require('http').createServer(handler).listen(8888),
     io = require('socket.io').listen(app),
     fs = require('fs'),
-    CQueue = require('./cqueue'),
-    cQueue = new CQueue();
+    CQueue = require('./cqueue').CQueue,
+    Workspace = require('./cqueue').Workspace,
+    cQueue = new CQueue(),
+    workspace = new Workspace();
 
-cQueue.registerMethods();
+workspace.registerMethods();
 
 function handler (req, res) {
     fs.readFile(__dirname + '/client/index.html',
@@ -20,12 +22,12 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-    cQueue.addClientToQueue(socket);
+    workspace.addClientToQueue(socket);
 
-    cQueue.broadcastMessages('updatedMessage');
+    workspace.broadcastMessages('updatedMessage');
 
     socket.on('disconnect', function() {
-        cQueue.removeClientFromQueue(socket);
-        cQueue.broadcastMessages('updatedMessage');
+        workspace.removeClientFromQueue(socket);
+        workspace.broadcastMessages('updatedMessage');
     });
 });
